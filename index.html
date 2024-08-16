@@ -9,8 +9,8 @@
     <link rel="shortcut icon" href="avatar.png" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
 </head>
+
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;200;300;400;500;600;700&display=swap");
 
@@ -45,9 +45,7 @@
 
 .main .image-container .image img {
   width: 350px;
-  align-items: center;
 }
-
 
 .main .image-container h1 {
   color: #00bcd4;
@@ -69,7 +67,7 @@
   width: 40vw;
   height: 50px;
   border-radius: 20px;
-  background: rgb(202 253 255 / 50%);
+  background: rgba(202, 253, 255, 0.5);
 }
 
 .main .input .talk {
@@ -95,133 +93,132 @@
   font-size: 15px;
   margin-right: 20px;
 }
-
 </style>
 
 <body>
     <section class="main">
         <div class="image-container">
             <div class="image">
-<img src="https://i.ibb.co/fQzzk38/giphy.gif" alt="giphy" border="0">
+                <img src="https://i.ibb.co/fQzzk38/giphy.gif" alt="giphy" border="0">
             </div>
             <h1>S I R I</h1>
-            <p>I'm a Virtual Assistant SIRI, How may i help you?</p>
+            <p>I'm a Virtual Assistant SIRI, How may I help you?</p>
         </div>
         <div class="input">
-            <button class="talk"><i class="fas fa-microphone-alt"></i></button>
-            <h1 class="content"> Click here to speak</h1>
+            <button class="talk" aria-label="Start voice command"><i class="fas fa-microphone-alt"></i></button>
+            <h1 class="content">Click here to speak</h1>
         </div>
     </section>
     <script>
-              const btn = document.querySelector('.talk')
-const content = document.querySelector('.content')
+        const btn = document.querySelector('.talk');
+        const content = document.querySelector('.content');
 
+        function speak(text) {
+            const text_speak = new SpeechSynthesisUtterance(text);
+            text_speak.rate = 1;
+            text_speak.volume = 1;
+            text_speak.pitch = 1;
+            window.speechSynthesis.speak(text_speak);
+        }
 
-function speak(text){
-    const text_speak = new SpeechSynthesisUtterance(text);
+        function wishMe() {
+            const hour = new Date().getHours();
+            if (hour >= 0 && hour < 12) {
+                speak("Good Morning Boss...");
+            } else if (hour >= 12 && hour < 17) {
+                speak("Good Afternoon Master...");
+            } else {
+                speak("Good Evening Sir...");
+            }
+        }
 
-    text_speak.rate = 1;
-    text_speak.volume = 1;
-    text_speak.pitch = 1;
+        window.addEventListener('load', () => {
+            speak("Initializing SIRI...");
+            wishMe();
+        });
 
-    window.speechSynthesis.speak(text_speak);
-}
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
 
-function wishMe(){
-    var day = new Date();
-    var hour = day.getHours();
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            content.textContent = transcript;
+            takeCommand(transcript.toLowerCase());
+        };
 
-    if(hour>=0 && hour<12){
-        speak("Good Morning Boss...")
-    }
+        recognition.onerror = (event) => {
+            content.textContent = "Sorry, I didn't catch that. Please try again.";
+            speak("Sorry, I didn't catch that. Please try again.");
+        };
 
-    else if(hour>12 && hour<17){
-        speak("Good Afternoon Master...")
-    }
+        btn.addEventListener('click', () => {
+            content.textContent = "Listening....";
+            recognition.start();
+        });
 
-    else{
-        speak("Good Evenining Sir...")
-    }
-
-}
-
-window.addEventListener('load', ()=>{
-    speak("Initializing SIRI..");
-    wishMe();
-});
-
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-const recognition =  new SpeechRecognition();
-
-recognition.onresult = (event)=>{
-    const currentIndex = event.resultIndex;
-    const transcript = event.results[currentIndex][0].transcript;
-    content.textContent = transcript;
-    takeCommand(transcript.toLowerCase());
-
-}
-
-btn.addEventListener('click', ()=>{
-    content.textContent = "Listening...."
-    recognition.start();
-})
-
-function takeCommand(message){
-    if(message.includes('hey') || message.includes('hello')){
-        speak("Hello Diwakar, How May I Help You?");
-    }
-    else if(message.includes("open google")){
-        window.open("https://google.com", "_blank");
-        speak("Opening Google...")
-    }
-    else if(message.includes("open youtube")){
-        window.open("https://youtube.com", "_blank");
-        speak("Opening Youtube...")
-    }
-    else if(message.includes("open facebook")){
-        window.open("https://facebook.com", "_blank");
-        speak("Opening Facebook...")
-    }
-
-    else if(message.includes('what is') || message.includes('who is') || message.includes('what are')) {
-        window.open(`https://www.google.com/search?q=${message.replace(" ", "+")}`, "_blank");
-        const finalText = "This is what i found on internet regarding " + message;
-	    speak(finalText);
-  
-    }
-
-    else if(message.includes('wikipedia')) {
-        window.open(`https://en.wikipedia.org/wiki/${message.replace("wikipedia", "")}`, "_blank");
-        const finalText = "This is what i found on wikipedia regarding " + message;
-        speak(finalText);
-    }
-
-    else if(message.includes('time')) {
-        const time = new Date().toLocaleString(undefined, {hour: "numeric", minute: "numeric"})
-        const finalText = time;
-        speak(finalText);
-    }
-
-    else if(message.includes('date')) {
-        const date = new Date().toLocaleString(undefined, {month: "short", day: "numeric"})
-        const finalText = date;
-        speak(finalText);
-    }
-
-    else if(message.includes('calculator')) {
-        window.open('Calculator:///')
-        const finalText = "Opening Calculator";
-        speak(finalText);
-    }
-
-    else {
-        window.open(`https://www.google.com/search?q=${message.replace(" ", "+")}`, "_blank");
-        const finalText = "I found some information for " + message + " on google";
-        speak(finalText);
-    }
-}
-              </script>
+        function takeCommand(message) {
+            if (message.includes('hey siri') || message.includes('hello')) {
+                speak("Hello Diwakar sir , How May I Help You?");
+            } else if (message.includes("open google")) {
+                window.open("https://google.com", "_blank", "noopener noreferrer");
+                speak("Opening Google...");
+            } else if (message.includes("open youtube")) {
+                window.open("https://youtube.com", "_blank", "noopener noreferrer");
+                speak("Opening Youtube...");
+            } else if (message.includes("open facebook")) {
+                window.open("https://facebook.com", "_blank", "noopener noreferrer");
+                speak("Opening Facebook...");
+            } else if (message.includes('what is') || message.includes('who is') || message.includes('what are')) {
+                window.open(`https://www.google.com/search?q=${message.replace(" ", "+")}`, "_blank", "noopener noreferrer");
+                const finalText = "This is what I found on the internet regarding " + message;
+                speak(finalText);
+            } else if (message.includes('wikipedia')) {
+                window.open(`https://en.wikipedia.org/wiki/${message.replace("wikipedia", "")}`, "_blank", "noopener noreferrer");
+                const finalText = "This is what I found on Wikipedia regarding " + message;
+                speak(finalText);
+            } else if (message.includes('time')) {
+                const time = new Date().toLocaleString(undefined, {hour: "numeric", minute: "numeric"});
+                speak(`The time is ${time}`);
+            } else if (message.includes('date')) {
+                const date = new Date().toLocaleString(undefined, {month: "short", day: "numeric"});
+                speak(`Today's date is ${date}`);
+            } else if (message.includes('weather')) {
+                fetch('https://api.weatherapi.com/v1/current.json?key=YOUR_API_KEY&q=auto:ip')
+                .then(response => response.json())
+                .then(data => {
+                    const weather = data.current.condition.text;
+                    const temp = data.current.temp_c;
+                    speak(`The current weather is ${weather} with a temperature of ${temp} degrees Celsius.`);
+                })
+                .catch(error => {
+                    speak("Sorry, I couldn't fetch the weather information.");
+                });
+            } else if (message.includes('calculator')) {
+                window.open('Calculator:///');
+                speak("Opening Calculator");
+            } else if (message.includes('open camera')) {
+                speak("Opening camera... However, camera access is not supported in this environment.");
+                // Implement camera access if it's a mobile app or desktop application.
+            } else if (message.includes('close camera')) {
+                speak("Closing camera... However, camera access is not supported in this environment.");
+                // Implement camera closing if it's a mobile app or desktop application.
+            } else if (message.includes('flashlight on')) {
+                speak("Turning on flashlight... However, flashlight access is not supported in this environment.");
+                // Implement flashlight control if it's a mobile app or desktop application.
+            } else if (message.includes('flashlight off')) {
+                speak("Turning off flashlight... However, flashlight access is not supported in this environment.");
+                // Implement flashlight control if it's a mobile app or desktop application.
+            } else if (message.includes('who are you')) {
+                speak("I am SIRI, your virtual assistant , My owner is Diwakar Tiwari.");
+            } else if (message.includes('who invented you')) {
+                speak("My owner is Diwakar Tiwari.");
+            } else {
+                window.open(`https://www.google.com/search?q=${message.replace(" ", "+")}`, "_blank", "noopener noreferrer");
+                const finalText = "I found some information for " + message + " on Google";
+                speak(finalText);
+            }
+        }
+    </script>
 </body>
 
 </html>
